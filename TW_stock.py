@@ -24,9 +24,9 @@ def normalize_stockname(input_txt):
     if not isinstance(input_txt, str):
         return False, None
     else:
-        stock_id_inputArr = re.findall("([\\d\\w\\.]+)", input_txt)
+        stock_id_input_arr = re.findall("([\\d\\w\\.]+)", input_txt)
         stock_id_arr = []
-        for check_stock in stock_id_inputArr:
+        for check_stock in stock_id_input_arr:
             temp = check_stock.split("_")[0].upper()
             if temp == "TSE":
                 stock_type = "tse"
@@ -61,8 +61,8 @@ def generate_full_url(stock_id_arr):
 
 
 def stock_process(stock_json):
-    msgArray = stock_json["msgArray"]
-    if msgArray == []:
+    msg_arr = stock_json["msgArray"]
+    if msg_arr == []:
         print(
             "The stock CAN'T be idientified,\n"
             "Please check if stock id are correct"
@@ -81,21 +81,21 @@ def stock_process(stock_json):
         mark = ["n", "c", "z", "Per", "o", "y", "v"]
         for i in range(len(header)):
             temp_arr = []
-            for msg in msgArray:
+            for msg in msg_arr:
                 if mark[i] == "Per":
-                    P_n = (
+                    p_n = (
                         (float(msg["z"]) - float(msg["y"]))
                         / float(msg["y"])
                         * 100
                     )
-                    value = str(round(P_n, 3)) + " %"
+                    value = str(round(p_n, 3)) + " %"
                 else:
                     value = msg[mark[i]]
                 temp_arr.append(value)
             stock_dictarr[header[i]] = temp_arr
 
         stock_arrdict = []
-        for msg in msgArray:
+        for msg in msg_arr:
             temp = {}
             temp["Name"] = msg["n"]
             temp["ID"] = msg["c"]
@@ -103,13 +103,13 @@ def stock_process(stock_json):
             temp["Price_open"] = msg["o"]
             temp["Volumn"] = msg["v"]
             temp["Price_yest"] = msg["y"]
-            P_n = (
+            p_n = (
                 (float(temp["Price_now"]) - float(temp["Price_yest"]))
                 / float(temp["Price_yest"])
                 * 100
             )
-            P = str(round(P_n, 3)) + " %"
-            temp["Percent"] = P
+            p = str(round(p_n, 3)) + " %"
+            temp["Percent"] = p
             stock_arrdict.append(temp)
 
         # print("stock_dictarr:\n",stock_dictarr)

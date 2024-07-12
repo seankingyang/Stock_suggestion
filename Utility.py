@@ -2,11 +2,16 @@ import plistlib
 import prettytable as pt
 import re
 
+
 def MakeTable(input_df, column_index_name=""):
     tb = pt.PrettyTable()
     if column_index_name != "":
         tb.add_column(column_index_name, input_df.index)
-    for col in input_df.columns.values:  # df.columns.values: get the name of list(each columns)
+    for (
+        col
+    ) in (
+        input_df.columns.values
+    ):  # df.columns.values: get the name of list(each columns)
         tb.add_column(col, input_df[col])
     return tb
 
@@ -21,7 +26,7 @@ def Load_Plist(path):
 
 def Write_Plist(path, root_dict):
     try:
-        with open(path, 'wb') as file:
+        with open(path, "wb") as file:
             return plistlib.dump(root_dict, file)
     except:
         return None
@@ -38,14 +43,19 @@ def List_2_Tuple(input_list):
 
 def series2list(input_series):
     list = []
-    for i in range( len( input_series ) ):
-        list.append( input_series[i] )
+    for i in range(len(input_series)):
+        list.append(input_series[i])
     return list
+
 
 # input: ["1","2","3"] ("1","2","3") "1" => [1,2,3], (1,2,3), 1
 # format can be "Int","Float", it will make all input be that type, or it will "Auto"
 def numerify(input, format="Auto"):
-    if isinstance(input, str) or isinstance(input, int) or isinstance(input, float):
+    if (
+        isinstance(input, str)
+        or isinstance(input, int)
+        or isinstance(input, float)
+    ):
         input_type = is_intORfloat(input)
         if input_type != "":
             if format == "Int":
@@ -129,7 +139,7 @@ def is_intORfloat(input_str):
         return ""
 
 
-def p_log(print_str_list,log_path,end_s ="\n"):
+def p_log(print_str_list, log_path, end_s="\n"):
     file_str = ""
     for i in range(len(print_str_list)):
         if i == 0:
@@ -138,7 +148,7 @@ def p_log(print_str_list,log_path,end_s ="\n"):
             file_str = file_str + " " + str(print_str_list[i])
     print(file_str, end=end_s)
     file_str = re.sub("\033\[\d*m", "", file_str)
-    with open(log_path, 'a+') as f:
+    with open(log_path, "a+") as f:
         f.write(file_str)
         if end_s == "\n":
             f.write("\r\n")
@@ -147,15 +157,14 @@ def p_log(print_str_list,log_path,end_s ="\n"):
         f.close()
 
 
-
-#####Color
-class bcolors:
-    PINK = '\033[95m'
-    BLUE = '\033[94m'
-    CYAN = '\033[96m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    ENDC = '\033[0m' ## End color
-    BOLD = '\033[1m' ## B
-    UNDERLINE = '\033[4m' ### _
+# Color
+class BColors:
+    PINK = "\033[95m"
+    BLUE = "\033[94m"
+    CYAN = "\033[96m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    ENDC = "\033[0m"  # End color
+    BOLD = "\033[1m"  # B
+    UNDERLINE = "\033[4m"  # _

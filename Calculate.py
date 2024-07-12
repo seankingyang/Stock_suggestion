@@ -1,4 +1,4 @@
-import math
+# import math
 import statistics
 from Utility import numerify
 
@@ -18,6 +18,7 @@ def Cal_MA_mean(import_list):
     import_list = numerify(import_list, "Float")
     return statistics.mean(import_list)
 
+
 def Cal_MA(Total_import_list, samples=5):
     Total_import_list = numerify(Total_import_list, "Float")
     length = len(Total_import_list)
@@ -31,6 +32,7 @@ def Cal_MA(Total_import_list, samples=5):
 
         MA.append(ma)
     return MA
+
 
 def Cal_MA_with_desirelist(Total_import_list, desire_ma_list):
     MA_list = []
@@ -50,6 +52,7 @@ def Cal_BR_pr(import_list):
     # sample = len(import_list)
     MA = Cal_MA_mean(import_list)
     return (last_close_price - MA) / MA * 100
+
 
 def Cal_BR(Total_import_list, samples=10):
     Total_import_list = numerify(Total_import_list, "Float")
@@ -76,6 +79,7 @@ def Cal_KD_rsv(import_list):
     else:
         return (last_close_price - Min_price) / (Max_price - Min_price) * 100
 
+
 def Cal_KDJ(Total_import_list, samples=10):
     Total_import_list = numerify(Total_import_list, "Float")
     length = len(Total_import_list)
@@ -83,7 +87,7 @@ def Cal_KDJ(Total_import_list, samples=10):
     J_shift = 50
     for i in range(length):
         if i + 1 < samples:
-            k,d,j = None, None, None
+            k, d, j = None, None, None
         else:
             RSV = Cal_KD_rsv(Total_import_list[i - samples + 1 : i + 1])
             if K[-1] is None:
@@ -103,6 +107,7 @@ def Cal_KDJ(Total_import_list, samples=10):
 # unit $
 def Cal_STD(import_list):
     return statistics.stdev(import_list)
+
 
 def Cal_BBands(Total_import_list, numofSTD=2.1, samples=20):
     Total_import_list = numerify(Total_import_list, "Float")
@@ -201,6 +206,7 @@ def Cal_EMA(
         EMA.append(ema)
     return EMA
 
+
 def Cal_MACD(
     Total_import_list,
     Total_import_list_High,
@@ -278,6 +284,7 @@ def Cal_Tr(
         Tr.append(tr)
     return Tr
 
+
 def Cal_EMA_pos(
     Total_import_list, Total_import_list_High, Total_import_list_Low, samples
 ):
@@ -297,6 +304,8 @@ def Cal_EMA_pos(
         EMA_pos.append(ema_pos)
     return EMA_pos
 
+
+# Average True Range (ATR)
 def Cal_ATR(
     Total_import_list,
     Total_import_list_High,
