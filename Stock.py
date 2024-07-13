@@ -1,11 +1,20 @@
-import pandas_datareader as web
+# import pandas_datareader as web
+# import numpy as np
 import yfinance as yf
 import pandas as pd
-import numpy as np
+
+
 import datetime
-from Utility import *
-from Calculate import *
-import os, time
+from Utility import (
+    Load_Plist,
+    Write_Plist,
+    isWithStr,
+    Split_str,
+    List_2_Tuple,
+    numerify,
+)
+import os
+import time
 
 
 def SetEnd_Start_DATE(end_str="", start_str=""):
@@ -38,8 +47,8 @@ def SetEnd_Start_DATE(end_str="", start_str=""):
 
 def Get_Stock_info(stock_id, start_datetime, end_datetime):
     return yf.download(stock_id, start=start_datetime, end=end_datetime)
-    #return web.get_data_yahoo(stock_id, start_datetime, end_datetime)
-    #return web.DataReader(stock_id, 'yahoo', start_datetime, end_datetime)
+    # return web.get_data_yahoo(stock_id, start_datetime, end_datetime)
+    # return web.DataReader(stock_id, 'yahoo', start_datetime, end_datetime)
 
 
 def Check_date_isUpdate(today_date, check_date_plist):
@@ -101,8 +110,9 @@ def Check_stock_database_date_Update(stock_code, stock_type, today_date):
                     [stock_content, tmp_content], ignore_index=True
                 )
                 stock_content.to_csv(stock_csv_path, index=False)
-    except:
+    except Exception as e:
         print("\t\t", "Can't not update.... Last date:", Last_Data_date)
+        print("\t\t", "Error:", str(e))
 
 
 def Get_stock_totalcode(stockcode, stocktype):
@@ -157,10 +167,10 @@ def Get_last_two_stock_content(stock_code, stock_type):
     return previous, new
 
 
-####################### This is the main #######################
+# ###################### This is the main #######################
 
 Stock_own_path = "./Handle_input/STOCK_own.plist"
-#Stock_own_path = "./Handle_input/STOCK_track.plist"
+# Stock_own_path = "./Handle_input/STOCK_track.plist"
 
 
 Check_date_plist = "./DataBase/Check_date.plist"
@@ -168,9 +178,9 @@ Check_date_plist = "./DataBase/Check_date.plist"
 
 Stock_own_content = Load_Plist(Stock_own_path)
 Stock_keys = list(Stock_own_content.keys())
-############### only for debug ##############
+# ############## only for debug ##############
 # Stock_keys = [Stock_keys[0]]
-#############################################
+# ############################################
 print("==============================================")
 print("================= STOCK LIST =================")
 print(str(Stock_keys))
@@ -202,7 +212,7 @@ for key in Stock_keys:
         stock_code, stock_type, Check_date_plist
     )
 
-###Post process###
+# ##Post process###
 tEnd = time.time()
 print("It cost %f sec" % (tEnd - tStart))
 print("=========== Update Database Finish ===========")
@@ -222,7 +232,7 @@ else:
 Check_date_dict = {"Check_date": Check_date}
 Write_Plist(Check_date_plist, Check_date_dict)
 
-########DEBUG#####
+# #######DEBUG#####
 # end, start = SetEnd_Start_DATE()
 # print("Start:", start, "End:", end)
 # start = datetime.date(2020, 9, 24)

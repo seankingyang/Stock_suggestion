@@ -3,6 +3,7 @@ from Utility import (
     p_log,
     Load_Plist,
     BColors,
+    series2list,
 )
 from Calculate import (
     Cal_percentage,
@@ -17,7 +18,14 @@ from Calculate import (
     Cal_BBands,
     Cal_ATR,
 )
-from Stock import series2list
+from Stock_analyze import (
+    br_analysis,
+    kd_analysis,
+    macd_analysis,
+    ema_analysis,
+    lowpassfilter_analysis,
+    bbands_analysis,
+)
 
 # import prettytable as pt
 import os
@@ -132,8 +140,6 @@ if os.path.isfile(log_path):
 
 p_log(["=============================================="], log_path)
 p_log(["=============== Plot Database ================"], log_path)
-# print("==============================================")
-# print("=============== Plot Database ================")
 tStart = time.time()
 Stock_own_path = "./Handle_input/STOCK_own.plist"
 # Stock_own_path = "./Handle_input/STOCK_track.plist"
@@ -212,7 +218,6 @@ for stock in Stock_keys:
                 isplot = True
 
     p_log(["\t\t\tCalculating..."], log_path)
-    # print("\t\t\tCalculating...")
     #   This should be controlled by input or something input data
     desire_MA = [5, 10, 15, 20, 30, 60, 90]
     stock_MA_list = Cal_MA_with_desirelist(stock_close, desire_MA)
@@ -279,33 +284,18 @@ for stock in Stock_keys:
     else:
         ATR_per = str(ATR_per) + "%"
     p_log(
-        ["\t\t\t\tATR:", "{:.2f}".format(ATR[-1]) + " \t" + ATR_per], log_path
+        ["\t\t\t\tATR:", "{:.2f}".format(ATR[-1]) + " \t" + ATR_per, "\n"],
+        log_path,
     )
     p_log(["\t\t\t\t4U($):", "{:.2f}".format(Four_U)], log_path)
     p_log(
-        ["\t\t\t\tSuggest position(units):", "{:.2f}".format(sugg_pos)],
+        ["\t\t\t\tSuggest position(units):", "{:.2f}".format(sugg_pos), "\n"],
         log_path,
     )
 
-    # print("\t\t\t\tStock_now:", str(Stock_now))
-
     p_log(["\t\t\t\tBR:", "{:.2f}".format(BR[-1]) + "%"], log_path, " ")
-    # print("\t\t\t\tBR:", str(BR[-1]) + "%", end=" ")
-    BR_result = "Notging"
-    if BR[-1] < -10:
-        BR_result = "FUCKING LOW ~~ MUST BUY!"
-    elif BR[-1] < -7:
-        BR_result = "TOO LOW ~~ BUY!"
-    elif BR[-1] < -5:
-        BR_result = "BUY!"
-    elif BR[-1] > 10:
-        BR_result = "FUCKING HIGH ~~ MUST SELL!"
-    elif BR[-1] > 7:
-        BR_result = "TOO HIGH ~~ SELL!"
-    elif BR[-1] > 5:
-        BR_result = "SELL!"
-    p_log(["\n\t\t\t\t\tAction:", BR_result], log_path)
-    # print("\n\t\t\t\t\tAction:", BR_result)
+    BR_result = br_analysis(BR)
+    p_log(["\n\t\t\t\t\tAction:", BR_result, "\n"], log_path)
 
     p_log(
         [
@@ -317,28 +307,9 @@ for stock in Stock_keys:
         log_path,
         " ",
     )
-    #  print(
-    #      "\t\t\t\tKDJ:",
-    #      str(K[-1]) + "%",
-    #      str(D[-1]) + "%",
-    #      str(J[-1] - 50) + "%",
-    #      end=" ",
-    #  )
-    KD_result = "Notging"
-    if K[-1] > 80 and D[-1] > 80 and K[-1] < K[-2] and K[-1] < D[-1]:
-        KD_result = "SELL!"
-    elif K[-1] < 20 and D[-1] > 20 and K[-1] > K[-2]:
-        KD_result = "BUY!"
-    elif K[-1] > 90 and D[-1] > 90 and K[-1] < K[-2] and K[-1] < D[-1]:
-        KD_result = "TOO HOT~~~SELL!"
-    elif K[-1] < 10 and D[-1] > 10 and K[-1] > K[-2]:
-        KD_result = "TOO COLD~~BUY!"
-    elif K[-1] < 15 and D[-1] < 15:
-        KD_result = "FUCKING COLD~~BUY!"
-    p_log(["\n\t\t\t\t\tAction:", KD_result], log_path)
-    # print("\n\t\t\t\t\tAction:", KD_result)
+    KD_result = kd_analysis(K, D)
+    p_log(["\n\t\t\t\t\tAction:", KD_result, "\n"], log_path)
 
-    MACD_result = "Nothing"
     p_log(
         [
             "\t\t\t\tMACD [DIF, MACD, DIF_MACD]:",
@@ -349,41 +320,9 @@ for stock in Stock_keys:
         log_path,
         " ",
     )
-    #
-    # print(
-    #     "\t\t\t\tMACD [DIF, MACD, DIF_MACD]:",
-    #     str(DIF[-1]),
-    #     str(MACD[-1]),
-    #     str(DIF_MACD[-1]),
-    #     end=" ",
-    # )
-    if (DIF_MACD[-1] > 0 and DIF_MACD[-3] > 0 and DIF_MACD[-2] > 0) or (
-        DIF_MACD[-1] < 0 and DIF_MACD[-3] < 0 and DIF_MACD[-2] < 0
-    ):
-        if DIF_MACD[-1] > 0:
-            MACD_result = "High"
-        else:
-            MACD_result = "Low"
+    MACD_result = macd_analysis(DIF_MACD)
+    p_log(["\n\t\t\t\t\tAction:", MACD_result, "\n"], log_path)
 
-        if DIF_MACD[-3] > DIF_MACD[-2] and DIF_MACD[-2] > DIF_MACD[-1]:
-            MACD_result = MACD_result + " SELL"
-        elif DIF_MACD[-3] < DIF_MACD[-2] and DIF_MACD[-2] < DIF_MACD[-1]:
-            MACD_result = MACD_result + " BUY"
-        else:
-            MACD_result = MACD_result + " Wait..."
-    elif DIF_MACD[-1] > 0 and DIF_MACD[-2] < 0:
-        MACD_result = "Transfer BUY"
-    elif DIF_MACD[-1] > 0 and DIF_MACD[-2] < 0:
-        MACD_result = "Transfer SELL"
-    elif DIF_MACD[-1] == 0:
-        if DIF_MACD[-2] > 0:
-            MACD_result = "Equal SELL"
-        elif DIF_MACD[-2] < 0:
-            MACD_result = "Equal BUY"
-    p_log(["\n\t\t\t\t\tAction:", MACD_result], log_path)
-    # print("\n\t\t\t\t\tAction:", MACD_result)
-
-    EMA_result = "Nothing"
     p_log(
         [
             "\t\t\t\tEMA  [EMA12, EMA26]:",
@@ -393,16 +332,8 @@ for stock in Stock_keys:
         log_path,
         " ",
     )
-    # print(
-    #     "\t\t\t\tEMA [EMA12, EMA26]:", str(EMA12[-1]), str(EMA26[-1]),
-    #     end=" "
-    # )
-    if EMA12[-2] < EMA26[-2] and EMA12[-1] >= EMA26[-1]:
-        EMA_result = "BUY"
-    elif stock_close[-1] <= EMA12[-1] and stock_close[-2] > EMA12[-2]:
-        EMA_result = "SELL"
-    p_log(["\n\t\t\t\t\tAction:", EMA_result], log_path)
-    # print("\n\t\t\t\t\tAction:", EMA_result)
+    EMA_result = ema_analysis(EMA12, EMA26, stock_close)
+    p_log(["\n\t\t\t\t\tAction:", EMA_result, "\n"], log_path)
 
     p_log(
         [
@@ -413,25 +344,10 @@ for stock in Stock_keys:
         log_path,
         " ",
     )
-    # print(
-    #     "\t\t\t\tLFT   [LL, UL]:",
-    #     "[" + str(stock_close_lft_LL[-1]) + ",",
-    #     str(stock_close_lft_UL[-1]) + "]",
-    #     end=" ",
-    # )
-    LFT_result = "Notging"
-    if (
-        Stock_now > stock_close_lft_UL[-1]
-        and stock_close_lft[-1] < stock_close_lft[-2]
-    ):
-        LFT_result = "SELL!"
-    elif (
-        Stock_now < stock_close_lft_LL[-1]
-        and stock_close_lft[-1] > stock_close_lft[-2]
-    ):
-        LFT_result = "BUY!"
-    p_log(["\n\t\t\t\t\tAction:", LFT_result], log_path)
-    # print("\n\t\t\t\t\tAction:", LFT_result)
+    LFT_result = lowpassfilter_analysis(
+        Stock_now, stock_close_lft, stock_close_lft_UL, stock_close_lft_LL
+    )
+    p_log(["\n\t\t\t\t\tAction:", LFT_result, "\n"], log_path)
 
     p_log(
         [
@@ -442,19 +358,8 @@ for stock in Stock_keys:
         log_path,
         " ",
     )
-    # print(
-    #     "\t\t\t\tBBand [LL, UL]:",
-    #     "[" + str(LL[-1]) + ",",
-    #     str(UL[-1]) + "]",
-    #     end=" ",
-    # )
-    BB_result = "Notging"
-    if Stock_now > UL[-1] and Center[-1] < Center[-2]:
-        BB_result = "SELL!"
-    elif Stock_now < LL[-1] and Center[-1] > Center[-2]:
-        BB_result = "BUY!"
-    p_log(["\n\t\t\t\t\tAction:", BB_result], log_path)
-    # print("\n\t\t\t\t\tAction:", BB_result)
+    BB_result = bbands_analysis(Stock_now, LL, UL, Center)
+    p_log(["\n\t\t\t\t\tAction:", BB_result, "\n"], log_path)
 
     result_list = [
         BR_result,
@@ -474,10 +379,10 @@ for stock in Stock_keys:
         elif "BUY" in result:
             result_buy_num += 1
 
-    if result_sell_num >= 3:
+    if result_sell_num >= 2 and result_buy_num < 2:
         total_result = "SELL!"
         suggestion_sell.append(stock_name)
-    elif result_buy_num >= 3:
+    elif result_buy_num >= 2 and result_sell_num < 2:
         total_result = "BUY!"
         suggestion_buy.append(stock_name)
     p_log(["\t--\tSUGGESTION:", total_result, "--"], log_path)
