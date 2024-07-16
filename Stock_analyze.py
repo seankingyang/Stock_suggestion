@@ -58,10 +58,10 @@ def macd_analysis(DIF_MACD):
 def ema_analysis(EMA12, EMA26, stock_close):
     result = "Neutral"
     # Bullish crossover
-    if EMA12[-2] < EMA26[-2] and EMA12[-1] > EMA26[-1]:
+    if EMA12[-2] < EMA26[-2] and EMA12[-1] >= EMA26[-1]:
         result = "Bullish Crossover - BUY Signal"
     # Bearish crossover
-    elif EMA12[-2] > EMA26[-2] and EMA12[-1] < EMA26[-1]:
+    elif EMA12[-2] > EMA26[-2] and EMA12[-1] <= EMA26[-1]:
         result = "Bearish Crossover - SELL Signal"
     # Price moves above EMA12
     elif stock_close[-1] > EMA12[-1] and stock_close[-2] <= EMA12[-2]:
