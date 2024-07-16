@@ -37,18 +37,29 @@ import pandas as pd
 # import copy
 
 
-# save_png_path = folder_name + "/" + stock_code + "_Vol-price_" \
-#                + stock_date[-1] + ".png"
-def Fullup(input, desire_len, prefix="", suffix=""):
-    input = str(input)
+def fill_up(input_value, desired_len, prefix="", suffix=""):
+    """
+    Ensures that the input_value, when combined with optional prefix and suffix,
+    reaches a desired length by recursively adding the prefix and suffix until the length is met or exceeded.
+
+    Parameters:
+    - input_value: The initial value to be modified.
+    - desired_len: The desired length of the final string.
+    - prefix: A string to be added to the beginning of input_value if needed.
+    - suffix: A string to be added to the end of input_value if needed.
+
+    Returns:
+    - A string of at least desired_len length, modified by adding prefix and suffix as needed.
+    """
+    input_value = str(input_value)  # Ensure the input is treated as a string
+    # If both prefix and suffix are empty, return the input_value as is
     if prefix == "" and suffix == "":
-        return input
-    else:
-        if len(input) < desire_len:
-            input = prefix + input + suffix
-            return Fullup(input, desire_len, prefix, suffix)
-        else:
-            return input
+        return input_value
+    # If the current length meets or exceeds the desired length, return the current value
+    if len(input_value) >= desired_len:
+        return input_value
+    # Recursively call fill_up with the modified value until the desired length is reached
+    return fill_up(prefix + input_value + suffix, desired_len, prefix, suffix)
 
 
 def plot_something(
@@ -172,7 +183,6 @@ for stock in Stock_keys:
         ],
         log_path,
     )
-    # print("\t-> " + str(n) + ". " + stock)
     n += 1
     isplot = False
     stock_name = Stock_own_content[stock]["Name"]
@@ -271,7 +281,6 @@ for stock in Stock_keys:
     U = Total_money * 0.01 / ATR[-1]
     Four_U = round(U * 4, 2)
     sugg_pos = round(U * 4 / round(Stock_now, 2), 0)
-    invest_total += sugg_pos * round(Stock_now, 2)
     ATR_per = round(Cal_percentage(ATR[-2], ATR[-1]), 2)
     if ATR_per > 0:
         ATR_per = (
@@ -385,9 +394,9 @@ for stock in Stock_keys:
     elif result_buy_num >= 2 and result_sell_num < 2:
         total_result = "BUY!"
         suggestion_buy.append(stock_name)
+        invest_total += sugg_pos * round(Stock_now, 2)
     p_log(["\t--\tSUGGESTION:", total_result, "--"], log_path)
     p_log(["\n\n"], log_path)
-    # print("\t--\tSUGGESTION:", total_result, "--")
 
     if isplot and G_plot:
         print("\n")
@@ -486,9 +495,7 @@ for stock in Stock_keys:
 
 
 tEnd = time.time()
-# print ("It cost %f sec" % (tEnd - tStart))
-# print("============ Plot Database Finish ============")
-# print("==============================================\n\n")
+
 p_log(["It cost ", (tEnd - tStart), "sec"], log_path)
 p_log(["============ Plot Database Finish ============"], log_path)
 p_log(["==============================================\n\n"], log_path)
@@ -496,24 +503,15 @@ p_log(["==============================================\n\n"], log_path)
 
 p_log(["=============================================="], log_path)
 p_log(["========== Summary of Stock Action ==========="], log_path)
-# print("==============================================")
-# print("========== Summary of Stock Action ===========")
-
 p_log(["Suggest to Buy:"], log_path, " ")
-# print("Suggest to Buy:",end=" ")
 for i in suggestion_buy:
     p_log([i], log_path, " ")
-    # print(i,end=" ")
-# print("\n")
+
 p_log(["\n"], log_path)
 p_log(["Suggest to Sell:"], log_path, " ")
-# print("Suggest to Sell:",end=" ")
 for i in suggestion_sell:
     p_log([i], log_path, " ")
-    # print(i,end=" ")
-# print("\n")
-# print("=============== Summary Finish ===============")
-# print("==============================================\n\n")
+
 p_log(["\n"], log_path)
 p_log(["=============== Summary Finish ==============="], log_path)
 p_log(["==============================================\n\n"], log_path)
