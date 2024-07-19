@@ -158,7 +158,7 @@ Stock_own_path = "./Handle_input/STOCK_own.plist"
 Stock_own_content = Load_Plist(Stock_own_path)
 Stock_keys = list(Stock_own_content.keys())
 n = 1
-Total_money = 500000
+Total_money = 1000000
 invest_total = 0
 
 suggestion_buy = []
@@ -255,7 +255,7 @@ for stock in Stock_keys:
     EMA120 = Cal_EMA(stock_close, stock_H, stock_L, 120)
     EMA240 = Cal_EMA(stock_close, stock_H, stock_L, 240)
 
-    plot_range_num = -50
+    plot_range_num = -100
     Stock_now = stock_close[-1]
     Stock_yesd = stock_close[-2]
     stock_per = round(Cal_percentage(Stock_yesd, Stock_now), 2)
@@ -383,9 +383,9 @@ for stock in Stock_keys:
     result_sell_num = 0
     total_result = "Nothing"
     for result in result_list:
-        if "SELL" in result:
+        if "Sell" in result or "SELL" in result:
             result_sell_num += 1
-        elif "BUY" in result:
+        elif "Buy" in result or "BUY" in result:
             result_buy_num += 1
 
     if result_sell_num >= 2 and result_buy_num < 2:
