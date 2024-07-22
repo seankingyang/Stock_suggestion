@@ -73,7 +73,7 @@ def plot_something(
     save_png_path="",
     plotrange=-150,
 ):
-    print("\t\t\tPlotting Close & " + Fullup(title, 12, "", "."), end=" ")
+    print("\t\t\tPlotting Close & " + fill_up(title, 12, "", "."), end=" ")
     if len(Y_value_list) == len(Y_value_lable_list):
         # plt.figure(figsize=(25, 15), dpi=50, linewidth=1)
         # plt.title(stock_code+"  Close & "+title, fontsize=15, x=0.5, y=1.03)

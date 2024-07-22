@@ -2,8 +2,11 @@ import requests
 import re
 import pandas as pd
 import prettytable as pt
+import warnings
 
 # from tabulate import tabulate
+
+warnings.filterwarnings("ignore")
 
 
 def Print_list(input_list, prefix="", postfix=""):
@@ -122,7 +125,7 @@ def convertTODataform(stock_dictarr):
     if isinstance(stock_dictarr, dict):
         stock_df = pd.DataFrame.from_dict(stock_dictarr)
         stock_df.set_index("Name", inplace=True)
-        stock_df.style.applymap(show, subset=pd.IndexSlice["Percent"])
+        stock_df.style.map(show, subset=pd.IndexSlice["Percent"])
         # print("stock_df:\n", stock_df)
     return stock_df
 
