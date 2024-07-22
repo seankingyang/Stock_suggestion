@@ -167,6 +167,21 @@
 		<key>TotalCost</key>
 		<integer>0</integer>
 	</dict>
+	<key>元太</key>
+	<dict>
+		<key>Stock_type</key>
+		<string>TWO</string>
+		<key>Name</key>
+		<string>元太</string>
+		<key>Codename</key>
+		<string>8069</string>
+		<key>Position</key>
+		<integer>0</integer>
+		<key>Unit</key>
+		<string>股</string>
+		<key>TotalCost</key>
+		<integer>0</integer>
+	</dict>
 	<key>訊連</key>
 	<dict>
 		<key>Stock_type</key>
