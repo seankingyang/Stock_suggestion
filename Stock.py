@@ -46,7 +46,7 @@ def SetEnd_Start_DATE(end_str="", start_str=""):
 
 
 def Get_Stock_info(stock_id, start_datetime, end_datetime):
-    return yf.download(stock_id, start=start_datetime, end=end_datetime)
+    return yf.download(stock_id, start=start_datetime)
     # return web.get_data_yahoo(stock_id, start_datetime, end_datetime)
     # return web.DataReader(stock_id, 'yahoo', start_datetime, end_datetime)
 
