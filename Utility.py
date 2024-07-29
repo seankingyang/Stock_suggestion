@@ -16,6 +16,45 @@ def MakeTable(input_df, column_index_name=""):
     return tb
 
 
+class Plist_operator:
+    def __init__(self, path):
+        self.path = path
+        if os.path.isfile(path):
+            self.plist = self.load()
+        else:
+            self.write({})
+            self.plist = self.load()
+
+    def load(self):
+        try:
+            with open(path, "rb") as file:
+                return plistlib.load(file)
+        except:
+            return None
+
+    def write(self, root_dict):
+        try:
+            with open(path, "wb") as file:
+                return plistlib.dump(root_dict, file)
+        except:
+            return None
+
+    def get(self):
+        return self.plist
+
+    def set(self, root_dict):
+        self.plist = root_dict
+        return Write_Plist(self.path, root_dict)
+
+    def update(self, key, value):
+        self.plist[key] = value
+        return Write_Plist(self.path, self.plist)
+
+    def delete(self, key):
+        del self.plist[key]
+        return Write_Plist(self.path, self.plist)
+
+
 def Load_Plist(path):
     try:
         with open(path, "rb") as file:
