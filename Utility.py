@@ -1,6 +1,7 @@
-import plistlib
 import prettytable as pt
-import re
+import re, os
+import plistlib
+import json
 
 
 def MakeTable(input_df, column_index_name=""):
@@ -16,6 +17,41 @@ def MakeTable(input_df, column_index_name=""):
     return tb
 
 
+class Json_operator:
+    def __init__(self, path):
+        self.path = path
+        if os.path.isfile(path):
+            self.json = self.load()
+        else:
+            self.write({})
+            self.json = self.load()
+
+    def load(self):
+        try:
+            with open(self.path, "r") as file:
+                return json.load(file)
+        except:
+            return None
+
+    def write(self, root_dict):
+        try:
+            with open(self.path, "w") as file:
+                return json.dump(root_dict, file)
+        except:
+            return None
+
+    def get(self):
+        return self.json
+
+    def set(self, root_dict):
+        self.json = root_dict
+        return self.write(root_dict)
+
+    def update(self, key, value):
+        self.json[key] = value
+        return self.write(self.json)
+
+
 class Plist_operator:
     def __init__(self, path):
         self.path = path
@@ -27,14 +63,14 @@ class Plist_operator:
 
     def load(self):
         try:
-            with open(path, "rb") as file:
+            with open(self.path, "rb") as file:
                 return plistlib.load(file)
         except:
             return None
 
     def write(self, root_dict):
         try:
-            with open(path, "wb") as file:
+            with open(self.path, "wb") as file:
                 return plistlib.dump(root_dict, file)
         except:
             return None
@@ -44,11 +80,11 @@ class Plist_operator:
 
     def set(self, root_dict):
         self.plist = root_dict
-        return Write_Plist(self.path, root_dict)
+        return self.write(root_dict)
 
     def update(self, key, value):
         self.plist[key] = value
-        return Write_Plist(self.path, self.plist)
+        return self.write(self.plist)
 
     def delete(self, key):
         del self.plist[key]
