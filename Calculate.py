@@ -1,6 +1,8 @@
 # import math
 import statistics
 from Utility import numerify
+import talib
+import numpy as np
 
 
 # Percentage
@@ -8,99 +10,94 @@ from Utility import numerify
 def Cal_percentage(previous, new):
     previous = numerify(previous, "Float")
     new = numerify(new, "Float")
-    per = ((new - previous) / previous) * 100
+
+    # Create numpy arrays with at least two values
+    values = np.array([previous, new])
+
+    # Calculate percentage change using talib
+    per = talib.ROC(values, timeperiod=1)[-1]
+
+    # Format the result to two decimal places
     return per
 
 
 # Moving Average (MA)
 # unit $
-def Cal_MA_mean(import_list):
-    import_list = numerify(import_list, "Float")
-    return statistics.mean(import_list)
+
+# def Cal_MA_mean(import_list):
+#     import_list = numerify(import_list, "Float")
+#     return statistics.mean(import_list)
 
 
 def Cal_MA(Total_import_list, samples=5):
-    Total_import_list = numerify(Total_import_list, "Float")
-    length = len(Total_import_list)
-    MA = []
+    # Convert the input list to a numpy array of floats
+    Total_import_list = np.array(Total_import_list, dtype=float)
 
-    for i in range(length):
-        if i + 1 < samples:
-            ma = None
-        else:
-            ma = Cal_MA_mean(Total_import_list[i - samples + 1 : i + 1])
+    # Calculate the simple moving average (SMA) using talib
+    MA = talib.SMA(Total_import_list, timeperiod=samples)
 
-        MA.append(ma)
-    return MA
+    # Convert the result to a list and return
+    return MA.tolist()
 
 
 def Cal_MA_with_desirelist(Total_import_list, desire_ma_list):
     MA_list = []
-    for i in range(len(desire_ma_list)):
-        tmp_list = Cal_MA(
-            Total_import_list, numerify(desire_ma_list[i], "Int")
-        )
+    for samples in desire_ma_list:
+        tmp_list = Cal_MA(Total_import_list, numerify(samples, "Int"))
         MA_list.append(tmp_list)
     return MA_list
 
 
 # Bias Rate (BIAS, BR)
 # unit %
-def Cal_BR_pr(import_list):
-    import_list = numerify(import_list, "Float")
-    last_close_price = import_list[-1]
-    # sample = len(import_list)
-    MA = Cal_MA_mean(import_list)
-    return (last_close_price - MA) / MA * 100
-
-
 def Cal_BR(Total_import_list, samples=10):
     Total_import_list = numerify(Total_import_list, "Float")
     length = len(Total_import_list)
     BR = []
+
     for i in range(length):
         if i + 1 < samples:
             br = None
         else:
-            br = Cal_BR_pr(Total_import_list[i - samples + 1 : i + 1])
+            sub_list = Total_import_list[i - samples + 1 : i + 1]
+            last_close_price = sub_list[-1]
+
+            # Calculate the simple moving average (SMA) using talib
+            MA = talib.SMA(np.array(sub_list), timeperiod=samples)[-1]
+
+            br = (last_close_price - MA) / MA * 100
+
         BR.append(br)
+
     return BR
 
 
 # Stochastic Oscillator (KD)
 # unit %
-def Cal_KD_rsv(import_list):
-    import_list = numerify(import_list, "Float")
-    last_close_price = import_list[-1]
-    Max_price = max(import_list)
-    Min_price = min(import_list)
-    if (Max_price - Min_price) <= 0:
-        return 0
-    else:
-        return (last_close_price - Min_price) / (Max_price - Min_price) * 100
 
 
-def Cal_KDJ(Total_import_list, samples=10):
-    Total_import_list = numerify(Total_import_list, "Float")
-    length = len(Total_import_list)
-    K, D, J = [], [], []
+# TODO: check the calculation
+def Cal_KDJ(stock_high, stock_low, stock_close, samples=10):
+    stock_high = np.array(numerify(stock_high, "Float"))
+    stock_low = np.array(numerify(stock_low, "Float"))
+    stock_close = np.array(numerify(stock_close, "Float"))
+    # Calculate the Stochastic Oscillator using talib
+    K, D = talib.STOCH(
+        stock_high,
+        stock_low,
+        stock_close,
+        fastk_period=samples,
+        slowk_period=3,
+        slowd_period=3,
+        slowk_matype=0,
+        slowd_matype=0,
+    )
+
+    # Calculate J values
     J_shift = 50
-    for i in range(length):
-        if i + 1 < samples:
-            k, d, j = None, None, None
-        else:
-            RSV = Cal_KD_rsv(Total_import_list[i - samples + 1 : i + 1])
-            if K[-1] is None:
-                k = RSV
-                d = k
-            else:
-                k = 2 / 3 * K[-1] + 1 / 3 * RSV
-                d = 2 / 3 * D[-1] + 1 / 3 * k
-            j = k - d + J_shift
-        K.append(k)
-        D.append(d)
-        J.append(j)
-    return K, D, J
+    J = K - D + J_shift
+
+    return K.tolist(), D.tolist(), J.tolist()
 
 
 # Bolllinger Bands (BBands)
