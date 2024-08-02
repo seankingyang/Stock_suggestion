@@ -32,6 +32,21 @@
 		<key>TotalCost</key>
 		<integer>0</integer>
 	</dict>
+	<key>國泰台灣5G+</key>
+	<dict>
+		<key>Stock_type</key>
+		<string>TW</string>
+		<key>Name</key>
+		<string>國泰台灣5G+</string>
+		<key>Codename</key>
+		<string>00881</string>
+		<key>Position</key>
+		<integer>0</integer>
+		<key>Unit</key>
+		<string>股</string>
+		<key>TotalCost</key>
+		<integer>0</integer>
+	</dict>
 	<key>元大台灣價值高股息</key>
 	<dict>
 		<key>Stock_type</key>
