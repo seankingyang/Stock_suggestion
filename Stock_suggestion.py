@@ -33,6 +33,7 @@ import time
 import matplotlib.pyplot as plt
 import datetime
 import pandas as pd
+import json
 
 # import copy
 
@@ -238,7 +239,7 @@ for stock in Stock_keys:
     stock_close_lft_UL = [1.05 * i for i in stock_close_lft]
     stock_close_lft_LL = [0.95 * i for i in stock_close_lft]
 
-    K, D, J = Cal_KDJ(stock_close, 20)
+    K, D, J = Cal_KDJ(stock_H, stock_L, stock_close, 20)
 
     BR = Cal_BR(stock_close, 20)
 
