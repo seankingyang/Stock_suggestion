@@ -72,3 +72,29 @@ class httpService:
     ```
 
 ## [TPEX API](https://www.tpex.org.tw/openapi/) 上櫃資料
+
+1. 上櫃股票行情
+    `https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes`
+
+    ```json
+    {
+        "Date": "string",
+        "SecuritiesCompanyCode": "string",
+        "CompanyName": "string",
+        "Close": "string",
+        "Change": "string",
+        "Open": "string",
+        "High": "string",
+        "Low": "string",
+        "Average": "string",
+        "TradingShares": "string",
+        "TransactionAmount": "string",
+        "TransactionNumber": "string",
+        "LatestBidPrice": "string",
+        "LatesAskPrice": "string",
+        "Capitals": "string",
+        "NextReferencePrice": "string",
+        "NextLimitUp": "string",
+        "NextLimitDown": "string"
+    }
+    ```

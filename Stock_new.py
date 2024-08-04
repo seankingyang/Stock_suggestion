@@ -13,7 +13,6 @@ from pathlib import Path
 from MarketTime import FutureMarketTime as fmt, StockMarketTime as smt
 
 
-
 def json_dump(data, file):
     with open(file, 'w', encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
@@ -59,6 +58,7 @@ def get_stock_history_and_save(stock_number, output_folder="./Stock_DB"):
         return
     df.to_csv(file_full_path)
 
+
 class httpService:
     def __init__(self):
         pass
@@ -67,18 +67,83 @@ class httpService:
         res = requests.get(url)
         res.encoding = 'big5'
         if res.status_code != 200:
-            raise Exception(f"Http request failed with status code {res.status_code}")
+            raise Exception(
+                f"Http request failed with status code {res.status_code}"
+            )
         return res
-    
+
     def get_json(self, url):
         res = self.__get(url)
         return res.json()
-    
-    def get_csv(self, url):
+
+    def get_csv_to_df(self, url):
         res = self.__get(url)
         return pd.read_csv(StringIO(res.text.replace("=", "")))
-                           
 
+
+class Stock_info_n:
+    def __init__(self):
+        self.http = httpService()
+        self.stock_info = self.__get_all_tw_stock_info()
+
+    def __get_today_stock_price_info(self, stock_type="TWSE"):
+        stockType_url_mapping = {
+            "TWSE": "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL",
+        }
+        url = "https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL"
+        stock_info_json = self.http.get_json(url)
+        df = pd.DataFrame(stock_info_json['data'])
+
+        df['證券代號'] = df['證券代號']
+        df = df.set_index('證券代號')
+        df[['成交金額', '成交股數']] = df[['成交金額', '成交股數']].apply(
+            lambda x: x.str.replace(',', '')
+        )
+        return df
+
+    def get_stock_info(self):
+        return self.stock_info
+
+    def get_stock_info_by_stock_number(self, stock_number):
+        return self.stock_info.loc[stock_number]
+
+    def get_stock_info_by_stock_name(self, stock_name):
+        return self.stock_info[self.stock_info['證券名稱'] == stock_name]
+
+    def get_stock_info_by_stock_type(self, stock_type):
+        return self.stock_info[
+            self.stock_info['證券代號'].str.contains(stock_type)
+        ]
+
+    def get_stock_info_by_stock_type_and_name(self, stock_type, stock_name):
+        return self.stock_info[
+            self.stock_info['證券代號'].str.contains(stock_type)
+            & self.stock_info['證券名稱'].str.contains(stock_name)
+        ]
+
+    def get_stock_info_by_stock_number_and_name(
+        self, stock_number, stock_name
+    ):
+        return self.stock_info[
+            (self.stock_info.index == stock_number)
+            & self.stock_info['證券名稱'].str.contains(stock_name)
+        ]
+
+    def get_stock_info_by_stock_number_and_type(
+        self, stock_number, stock_type
+    ):
+        return self.stock_info[
+            (self.stock_info.index == stock_number)
+            & self.stock_info['證券代號'].str.contains(stock_type)
+        ]
+
+    def get_stock_info_by_stock_number_and_name_and_type(
+        self, stock_number, stock_name, stock_type
+    ):
+        return self.stock_info[
+            (self.stock_info.index == stock_number)
+            & self.stock_info['證券名稱'].str.contains(stock_name)
+        ]
 
 
 class Stock_info:
@@ -99,7 +164,7 @@ class Stock_info:
                 self.tracking_stocks_maping, "./Handle_input/tw_stock.json"
             )
         # Get the all TW stock number
-    
+
     def __get_sotock_full_code(self):
         for stock in self.tracking_stocks_maping:
             if "Stock_full_code" not in self.tracking_stocks_maping[stock]:
@@ -110,7 +175,8 @@ class Stock_info:
                 elif self.tracking_stocks_maping[stock]["Stock_type"] == "TW":
                     self.tracking_stocks_maping[stock][
                         "Stock_full_code"
-                    ] = f"{stock}.TW"        
+                    ] = f"{stock}.TW"
+
     def __get_all_tw_stock_number_and_name(self):
         max_time = 15
         i = 0
@@ -127,7 +193,7 @@ class Stock_info:
                     for idx, row in all_tw_info.iterrows():
                         if (
                             not re.findall(
-                                r'[購|售|熊|年|元展]\d+', row['證券名稱']
+                                r'(購|售|熊|年|元展)\d+', row['證券名稱']
                             )
                             and not re.findall(
                                 r'[A-Z]', idx.replace('.TW', '')
@@ -160,9 +226,6 @@ class Stock_info:
     def get_all_tw_stock_info(self, date=datetime.datetime.today()):
         return self.__grab_all_tw_stock_info(date)
 
-
-
-
     def __grab_all_tw_stock_info(self, date=datetime.datetime.today()):
         if not isinstance(date, str):
             date = date.strftime('%Y%m%d')
@@ -181,7 +244,7 @@ class Stock_info:
             )
             - 1,
         )
-        df['證券代號'] = df['證券代號'] 
+        df['證券代號'] = df['證券代號']
         df = df.set_index('證券代號')
         df[['成交金額', '成交股數']] = df[['成交金額', '成交股數']].apply(
             lambda x: x.str.replace(',', '')
