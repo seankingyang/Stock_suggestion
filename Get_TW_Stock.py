@@ -1,5 +1,4 @@
 import requests
-import urllib
 import json
 import os
 import re
@@ -7,7 +6,7 @@ import yfinance as yf
 import pandas as pd
 import datetime
 from pathlib import Path
-from MarketTime import FutureMarketTime as fmt, StockMarketTime as smt
+from MarketTime import StockMarketTime as smt
 import concurrent.futures
 from io import StringIO
 import logging
@@ -28,7 +27,8 @@ class Logger(logging.Logger):
 
         # Define color formatter
         color_formatter = colorlog.ColoredFormatter(
-            "%(log_color)s%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            "%(log_color)s%(asctime)s - %(name)s - %(levelname)s - "
+            "%(message)s",
             log_colors={
                 'DEBUG': 'cyan',
                 'INFO': 'light_white',
