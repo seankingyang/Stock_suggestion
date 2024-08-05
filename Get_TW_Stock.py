@@ -289,16 +289,20 @@ class StockHistory:
         if file_full_path.is_file():
             df_exist = pd.read_csv(file_full_path, index_col='Date')
             last_date_in_csv = df_exist.index[-1].split(' ')[0]
+            today_date = datetime.datetime.today()
             last_open_time = smt.last_open_time(
-                datetime.datetime.today()
+                today_date
             ).strftime('%Y-%m-%d')
-            if last_date_in_csv == last_open_time:
+            if last_date_in_csv == last_open_time and last_date_in_csv != today_date.strftime('%Y-%m-%d'):
                 return
 
             df_new = self.get_stock_history(
                 stock_number, start=last_date_in_csv
             )
-            df_new = df_new.iloc[1:]
+            if last_date_in_csv ==today_date.strftime('%Y-%m-%d'):
+                df_exist = df_exist.iloc[:-1]
+            else:
+                df_new = df_new.iloc[1:]
             df = pd.concat([df_exist, df_new]).drop_duplicates()
 
         else:
