@@ -154,10 +154,13 @@ p_log(["=============================================="], log_path)
 p_log(["=============== Plot Database ================"], log_path)
 tStart = time.time()
 Stock_own_path = "./Handle_input/STOCK_own.plist"
-# Stock_own_path = "./Handle_input/STOCK_track.plist"
-
 Stock_own_content = Load_Plist(Stock_own_path)
+
+#Stock_own_path = "./Handle_Stock/Stock_Code_Mapping.json"
+#Stock_own_content = json.loads(open(Stock_own_path).read())
+
 Stock_keys = list(Stock_own_content.keys())
+Stock_keys = Stock_keys[:100]
 n = 1
 Total_money = 1000000
 invest_total = 0
@@ -171,23 +174,23 @@ suggestion_sell = []
 
 now_time = int(datetime.datetime.now().strftime("%H"))
 global G_plot
-G_plot = True
+G_plot = False
 for stock in Stock_keys:
     p_log(
         [
             "\t-> "
             + str(n)
             + ". "
-            + stock
+            + Stock_own_content[stock]["Name"]
             + "\t "
-            + Stock_own_content[stock]["Codename"]
+            + Stock_own_content[stock]["Code"]
         ],
         log_path,
     )
     n += 1
     isplot = False
     stock_name = Stock_own_content[stock]["Name"]
-    stock_code = Stock_own_content[stock]["Codename"]
+    stock_code = Stock_own_content[stock]["Code"]
     folder_name = "./Handle_output/" + stock_name
 
     stock = pd.read_csv("./DataBase/" + stock_code + ".csv")
@@ -277,31 +280,44 @@ for stock in Stock_keys:
         ["\t\t\t\tStock_now:", str(round(Stock_now, 2)) + " \t" + stock_per],
         log_path,
     )
-
-    ATR = Cal_ATR(stock_close, stock_H, stock_L, 21)
-    U = Total_money * 0.01 / ATR[-1]
-    Four_U = round(U * 4, 2)
-    sugg_pos = round(U * 4 / round(Stock_now, 2), 0)
-    ATR_per = round(Cal_percentage(ATR[-2], ATR[-1]), 2)
-    if ATR_per > 0:
-        ATR_per = (
-            f"{BColors.RED}" + str(ATR_per) + "% \u2191" + f"{BColors.ENDC}"
+    try:
+        ATR = Cal_ATR(stock_close, stock_H, stock_L, 21)
+        U = Total_money * 0.01 / ATR[-1]
+        Four_U = round(U * 4, 2)
+        sugg_pos = round(U * 4 / round(Stock_now, 2), 0)
+        ATR_per = round(Cal_percentage(ATR[-2], ATR[-1]), 2)
+        if ATR_per > 0:
+            ATR_per = (
+                f"{BColors.RED}"
+                + str(ATR_per)
+                + "% \u2191"
+                + f"{BColors.ENDC}"
+            )
+        elif ATR_per < 0:
+            ATR_per = (
+                f"{BColors.GREEN}"
+                + str(ATR_per)
+                + "% \u2193"
+                + f"{BColors.ENDC}"
+            )
+        else:
+            ATR_per = str(ATR_per) + "%"
+        p_log(
+            ["\t\t\t\tATR:", "{:.2f}".format(ATR[-1]) + " \t" + ATR_per, "\n"],
+            log_path,
         )
-    elif ATR_per < 0:
-        ATR_per = (
-            f"{BColors.GREEN}" + str(ATR_per) + "% \u2193" + f"{BColors.ENDC}"
+        p_log(["\t\t\t\t4U($):", "{:.2f}".format(Four_U)], log_path)
+        p_log(
+            [
+                "\t\t\t\tSuggest position(units):",
+                "{:.2f}".format(sugg_pos),
+                "\n",
+            ],
+            log_path,
         )
-    else:
-        ATR_per = str(ATR_per) + "%"
-    p_log(
-        ["\t\t\t\tATR:", "{:.2f}".format(ATR[-1]) + " \t" + ATR_per, "\n"],
-        log_path,
-    )
-    p_log(["\t\t\t\t4U($):", "{:.2f}".format(Four_U)], log_path)
-    p_log(
-        ["\t\t\t\tSuggest position(units):", "{:.2f}".format(sugg_pos), "\n"],
-        log_path,
-    )
+    except:
+        p_log(["\t\t\t\tATR: No ATR data\n"], log_path)
+        continue
 
     p_log(["\t\t\t\tBR:", "{:.2f}".format(BR[-1]) + "%"], log_path, " ")
     BR_result = br_analysis(BR)
@@ -320,18 +336,22 @@ for stock in Stock_keys:
     KD_result = kd_analysis(K, D)
     p_log(["\n\t\t\t\t\tAction:", KD_result, "\n"], log_path)
 
-    p_log(
-        [
-            "\t\t\t\tMACD [DIF, MACD, DIF_MACD]:",
-            "{:.2f}".format(DIF[-1]),
-            "{:.2f}".format(MACD[-1]),
-            "{:.2f}".format(DIF_MACD[-1]),
-        ],
-        log_path,
-        " ",
-    )
-    MACD_result = macd_analysis(DIF_MACD)
-    p_log(["\n\t\t\t\t\tAction:", MACD_result, "\n"], log_path)
+    try:
+        p_log(
+            [
+                "\t\t\t\tMACD [DIF, MACD, DIF_MACD]:",
+                "{:.2f}".format(DIF[-1]),
+                "{:.2f}".format(MACD[-1]),
+                "{:.2f}".format(DIF_MACD[-1]),
+            ],
+            log_path,
+            " ",
+        )
+        MACD_result = macd_analysis(DIF_MACD)
+        p_log(["\n\t\t\t\t\tAction:", MACD_result, "\n"], log_path)
+    except:
+        MACD_result = "No MACD data"
+        p_log(["\n\t\t\t\t\tAction:", MACD_result, "\n"], log_path)
 
     p_log(
         [
@@ -391,10 +411,10 @@ for stock in Stock_keys:
 
     if result_sell_num >= 2 and result_buy_num < 2:
         total_result = "SELL!"
-        suggestion_sell.append(stock_name)
+        suggestion_sell.append((stock_code, stock_name))
     elif result_buy_num >= 2 and result_sell_num < 2:
         total_result = "BUY!"
-        suggestion_buy.append(stock_name)
+        suggestion_buy.append((stock_code, stock_name))
         invest_total += sugg_pos * round(Stock_now, 2)
     p_log(["\t--\tSUGGESTION:", total_result, "--"], log_path)
     p_log(["\n\n"], log_path)
@@ -506,12 +526,12 @@ p_log(["=============================================="], log_path)
 p_log(["========== Summary of Stock Action ==========="], log_path)
 p_log(["Suggest to Buy:"], log_path, " ")
 for i in suggestion_buy:
-    p_log([i], log_path, " ")
+    p_log(["-".join(i)], log_path, " ")
 
 p_log(["\n"], log_path)
 p_log(["Suggest to Sell:"], log_path, " ")
 for i in suggestion_sell:
-    p_log([i], log_path, " ")
+    p_log(["-".join(i)], log_path, " ")
 
 p_log(["\n"], log_path)
 p_log(["=============== Summary Finish ==============="], log_path)

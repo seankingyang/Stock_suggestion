@@ -363,9 +363,8 @@ class StockHistory:
         if isinstance(stock_number_list, str):
             stock_number_list = [stock_number_list]
 
-        stock_data = {}
-        self.get_stock_df_from_web(stock_number_list)
-        return
+        stock_data = self.get_stock_history(stock_number_list)
+        return stock_data
 
     # No OLD one use this function
     def save_stock_df_to_csv(self, stock_number, df_new):
