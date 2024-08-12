@@ -8,7 +8,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>富邦台50</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>006208</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -23,7 +23,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>國泰永續高股息</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>00878</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -38,7 +38,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>國泰台灣5G+</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>00881</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -53,7 +53,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>元大台灣價值高股息</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>00940</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -68,7 +68,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>台積電</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>2330</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -83,7 +83,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>研華</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>2395</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -98,7 +98,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>友達</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>2409</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -113,7 +113,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>華新科</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>2492</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -128,7 +128,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>富邦金</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>2881</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -143,7 +143,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>開發金</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>2883</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -158,7 +158,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>大立光</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>3008</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -173,7 +173,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>富采</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>3714</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -188,7 +188,7 @@
 		<string>TWO</string>
 		<key>Name</key>
 		<string>元太</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>8069</string>
 		<key>Position</key>
 		<integer>0</integer>
@@ -203,7 +203,7 @@
 		<string>TW</string>
 		<key>Name</key>
 		<string>訊連</string>
-		<key>Codename</key>
+		<key>Code</key>
 		<string>5203</string>
 		<key>Position</key>
 		<integer>0</integer>
