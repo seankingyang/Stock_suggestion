@@ -114,17 +114,6 @@ cal_util = Calculate_util(df)
 output_df = cal_util.cal_ICHIMOKUCLOUD()
 print(output_df)
 
-#plot the df close column and the output_df transfer_line_9, base_line_26, Leading_line_A, Leading_line_B, Lagging_line 
-# only plot the last x rows
-# the x axis is date (%Y-%m-%d) also conbine the output_df['date'] , alouth the date is not in the output_df
-# the x tick is only show the month and day
-# the y axis is the close column
-# the legend is the column name
-# the title is the file_path
-# the x axis is date (%Y-%m-%d) also conbine the output_df['date'] , alouth the date is not in the output_df
-# the x tick is only show the month and day
-# the y axis is the close column
-
 
 def plot_df_and_output_df(df, output_df, x=200):
     plt.figure(figsize=(10, 5))
@@ -133,6 +122,7 @@ def plot_df_and_output_df(df, output_df, x=200):
         plt.plot(df['date'].tail(x), output_df[column].tail(x), label=column)
     plt.legend()
     plt.show()
+
 
 plot_df_and_output_df(df, output_df)
 
