@@ -4,7 +4,7 @@ import random
 
 
 def create_signal_fake_data(
-    start_date="2008-01-02",
+    end_date="2022-01-02",
     num_days=50,
     buy_weight=0.35,
     sell_weight=0.35,
@@ -15,8 +15,8 @@ def create_signal_fake_data(
     Generate fake signal data for backtesting.
 
     Parameters:
-    - start_date (str): The start date for the data in 'YYYY-MM-DD' format.
-    - num_days (int): The number of days to generate data for.
+    - end_date (str): The start date for the data in 'YYYY-MM-DD' format.
+    - num_days (int): The number of days before end_date to generate data for.
     - buy_weight (float): The probability weight for 'buy' signals.
     - sell_weight (float): The probability weight for 'sell' signals.
     - min_position (int): The minimum position size for 'buy' signals.
@@ -25,7 +25,7 @@ def create_signal_fake_data(
     Returns:
     - pd.DataFrame: A DataFrame containing the generated signal data.
     """
-    end_date = pd.to_datetime(start_date) + pd.Timedelta(days=num_days - 1)
+    start_date = pd.to_datetime(end_date) - pd.Timedelta(days=num_days - 1)
     dates = pd.date_range(
         start=start_date, end=end_date, freq="B"
     )  # 'B' for business days
@@ -121,7 +121,10 @@ def backtest_portfolio(
 
 
 # Example usage
-signal_data = create_signal_fake_data(start_date="2022-05-02", num_days=100)
+signal_data = create_signal_fake_data(
+    end_date="2022-05-02", num_days=100,
+    min_position=2000000, max_position=2000000
+)
 
 # Print the first few rows of the generated data
 print(signal_data.head(20))
@@ -135,10 +138,15 @@ final_value, trade_history, final_position = backtest_portfolio(
 )
 
 print(f"\nInitial capital: ${initial_capital:.2f}")
-print(f"Final portfolio value: ${final_value:.2f}")
+print(
+    f"Final portfolio value: ${final_value:.2f}, "
+    f"profit: ${final_value - initial_capital:.2f} "
+    f"({(final_value - initial_capital) / initial_capital * 100:.2f}%)"
+)
 print(f"Final position: {final_position} shares")
 print("\nTrade history:")
 for trade in trade_history:
     print(
-        f"{trade[0].capitalize()} {trade[2]} shares at ${trade[3]:.2f} on {trade[1]}"
+        f"{trade[0].capitalize()} {trade[2]} shares at "
+        f"${trade[3]:.2f} on {trade[1]}"
     )
