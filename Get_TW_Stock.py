@@ -343,6 +343,7 @@ class StockHistory:
             stock_number_list = [stock_number_list]
 
         stock_data = {}
+        start_date = None
         for stock_number in stock_number_list:
             if ".TWO" in stock_number:
                 file_name = stock_number.replace(".TWO", "") + ".csv"
@@ -353,10 +354,14 @@ class StockHistory:
             if file_full_path.is_file():
                 df = pd.read_csv(file_full_path, index_col="Date")
                 stock_data[stock_number] = df
+                if start_date is None:
+                    start_date = df.index[-1].split(" ")[0]
+                else:
+                    start_date = min(start_date, df.index[-1].split(" ")[0])
             else:
                 self.logger.log_info(f"{stock_number} has no data")
                 stock_data[stock_number] = pd.DataFrame()
-        return stock_data
+        return stock_data, start_date
 
     # No one use this function
     def get_stock_df_from_web(self, stock_number_list):
@@ -477,7 +482,7 @@ def main():
     stock_numbers = [
         stock["yfinance_code"] for stock in stock_code_mapping.values()
     ]
-    # stock_numbers = stock_numbers[:10]
+    stock_numbers = stock_numbers[:10]
     m_thread = MutiThread(max_threads=0)
     tasks = [(stock_number,) for stock_number in stock_numbers]
     result = m_thread.run_multithreaded(
