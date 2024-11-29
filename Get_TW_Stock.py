@@ -550,7 +550,7 @@ class NewStockHistory:
         tasks = []
         for stock_number, df in stock_data.items():
             tasks.append((stock_number, df))
-        
+
         m_thread = MutiThread(max_threads=0)
         results = m_thread.run_multithreaded(
             self.save_stock_data_to_csv_single, tasks
@@ -568,6 +568,7 @@ class NewStockHistory:
         stock_data = {}
         start_date = None
         for stock_number in stock_number_list:
+            print(stock_number)
             if ".TWO" in stock_number:
                 file_name = stock_number.replace(".TWO", "") + ".csv"
             elif ".TW" in stock_number:
@@ -577,10 +578,15 @@ class NewStockHistory:
             if file_full_path.is_file():
                 df = pd.read_csv(file_full_path, index_col="Date")
                 stock_data[stock_number] = df
-                if start_date is None:
-                    start_date = df.index[-1].split(" ")[0]
-                else:
-                    start_date = min(start_date, df.index[-1].split(" ")[0])
+                try:
+                    if start_date is None:
+                        start_date = df.index[-1].split(" ")[0]
+                    else:
+                        start_date = min(start_date, df.index[-1].split(" ")[0])
+                except Exception as e:
+                    self.logger.log_error(
+                        f"{stock_number}\ndf:\n{df}\n exception:{e}"
+                    )
             else:
                 self.logger.log_info(f"{stock_number} has no data")
                 stock_data[stock_number] = pd.DataFrame()
@@ -631,7 +637,7 @@ def main():
     stock_numbers = [
         stock["yfinance_code"] for stock in stock_code_mapping.values()
     ]
-    stock_numbers = stock_numbers[:10]
+    stock_numbers = stock_numbers[:]
     stock_history = NewStockHistory("./DataBase")
     stock_history.update_merge_save_stock_data(stock_numbers)
     #m_thread = MutiThread(max_threads=0)
